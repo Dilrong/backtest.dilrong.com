@@ -1,0 +1,6 @@
+@import url("https://cdn.jsdelivr.net/npm/pretendard/dist/web/static/pretendard.css");
+@import "tailwindcss";
+
+body {
+  font-family: "Pretendard", sans-serif;
+}
