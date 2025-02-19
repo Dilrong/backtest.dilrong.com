@@ -3,7 +3,7 @@ from app.services.backtest_service import (
     calculate_portfolio_backtest,
     calculate_strategy_backtest,
 )
-from app.schemas.response_schema import APIResponse
+from app.schemas.api_response import APIResponse
 from fastapi import APIRouter
 
 router = APIRouter(prefix="/backtest")

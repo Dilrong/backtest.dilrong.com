@@ -1,4 +1,6 @@
-import { Button } from "react-aria-components";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Trash2 } from "lucide-react";
 
 interface PortfolioItem {
   id: number;
@@ -13,23 +15,27 @@ interface Props {
 
 export default function PortfolioList({ portfolio, onRemove }: Props) {
   return (
-    <ul className="w-full max-w-lg mx-auto mt-6 space-y-3">
+    <div className="w-full max-w-lg mx-auto mt-4 space-y-2">
       {portfolio.map((item) => (
-        <li
-          key={item.id}
-          className="flex justify-between items-center p-3 bg-white/10 backdrop-blur-lg rounded-lg shadow-md"
-        >
-          <span className="text-gray-300">
-            {item.ticker} - {item.percentage}%
-          </span>
-          <Button
-            className="text-red-400 hover:text-red-500 transition-all"
-            onPress={() => onRemove(item.id)}
-          >
-            ❌
-          </Button>
-        </li>
+        <Card key={item.id} className="shadow-sm">
+          <CardContent className="flex justify-between items-center p-3 text-gray-200">
+            <div className="flex items-center gap-3">
+              <span className="font-medium">{item.ticker}</span>
+              <span className="text-sm text-muted-foreground">
+                {item.percentage}%
+              </span>
+            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => onRemove(item.id)}
+              className="text-gray-400 hover:text-red-500"
+            >
+              <Trash2 className="w-5 h-5" />
+            </Button>
+          </CardContent>
+        </Card>
       ))}
-    </ul>
+    </div>
   );
 }

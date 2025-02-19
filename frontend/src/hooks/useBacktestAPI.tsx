@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { baseUrl } from "../constants/baseUrl";
 
 interface BacktestRequest {
   assets: Record<string, number>;
   initial_balance: number;
   start_date: string;
   end_date: string;
+  rebalance_period: string;
 }
 
 interface BacktestResult {
@@ -37,30 +39,32 @@ export default function useBacktestAPI() {
       initial_balance: initialBalance,
       start_date: startDate,
       end_date: endDate,
+      rebalance_period: "1D",
     };
 
     try {
-      const response = await fetch("http://localhost:8000/backtest/portfolio", {
+      const response = await fetch(`${baseUrl}/backtest/portfolio`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
-      setIsLoading(false);
 
       if (!response.ok || !data.success) {
-        setError(data.message || "Backtest failed.");
-        return null;
+        throw new Error(data.message || "Backtest failed.");
       }
 
       setBacktestResult(data.data);
       return data.data;
     } catch (err) {
-      console.error(err);
-      setIsLoading(false);
-      setError("Error connecting to the server.");
+      console.error("Backtest Error:", err);
+      setError(
+        err instanceof Error ? err.message : "Error connecting to the server."
+      );
       return null;
+    } finally {
+      setIsLoading(false);
     }
   };
 

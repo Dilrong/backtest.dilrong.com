@@ -1,86 +1,127 @@
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Input, Button } from "react-aria-components";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Combobox } from "@/components/ui/combobox";
+import { useToast } from "@/hooks/use-toast";
+import { SUPPORTED_ASSETS } from "../../constants/supportedAssets";
 
-interface Props {
-  onAdd: (ticker: string, percentage: number) => void;
-  portfolio?: { ticker: string; percentage: number }[];
+interface PortfolioItem {
+  ticker: string;
+  percentage: number;
 }
 
-const schema = z.object({
-  ticker: z.string().min(1, "Please enter a ticker."),
-  percentage: z.preprocess(
-    (val) => Number(val),
-    z
-      .number()
-      .positive("Percentage must be greater than 0.")
-      .max(100, "Percentage cannot exceed 100%.")
-  ),
-});
+interface PortfolioFormProps {
+  onAdd: (ticker: string, percentage: number) => void;
+  currentPortfolio?: PortfolioItem[];
+}
 
-type FormData = z.infer<typeof schema>;
+export default function PortfolioForm({
+  onAdd,
+  currentPortfolio = [],
+}: PortfolioFormProps) {
+  const [selectedTicker, setSelectedTicker] = useState<string | null>(null);
+  const [percentage, setPercentage] = useState<string>("");
+  const { toast } = useToast();
 
-export default function PortfolioForm({ onAdd, portfolio = [] }: Props) {
-  const {
-    register,
-    handleSubmit,
-    setError,
-    reset,
-    formState: { errors },
-  } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  });
-
-  const onSubmit = (data: FormData) => {
-    const totalPercentage =
-      (portfolio ?? []).reduce((sum, item) => sum + item.percentage, 0) +
-      data.percentage;
-
-    if (totalPercentage > 100) {
-      setError("percentage", {
-        message: "Total allocation cannot exceed 100%.",
+  const handleAdd = () => {
+    if (!selectedTicker) {
+      toast({
+        variant: "destructive",
+        title: "Asset not selected",
+        description: "Please select an asset to add to your portfolio.",
       });
       return;
     }
 
-    onAdd(data.ticker.toUpperCase(), data.percentage);
-    reset();
+    const parsedPercentage = percentage !== "" ? parseFloat(percentage) : NaN;
+
+    if (
+      isNaN(parsedPercentage) ||
+      parsedPercentage <= 0 ||
+      parsedPercentage > 100
+    ) {
+      toast({
+        variant: "destructive",
+        title: "Invalid Percentage",
+        description: "Percentage must be between 1 and 100.",
+      });
+      return;
+    }
+
+    const totalPercentage =
+      (Array.isArray(currentPortfolio)
+        ? currentPortfolio.reduce((acc, item) => acc + item.percentage, 0)
+        : 0) + parsedPercentage;
+
+    if (totalPercentage > 100) {
+      toast({
+        variant: "destructive",
+        title: "Total Percentage Exceeded",
+        description: `Total allocation cannot exceed 100%. Current: ${
+          totalPercentage - parsedPercentage
+        }%`,
+      });
+      setPercentage("");
+      return;
+    }
+
+    onAdd(selectedTicker, parsedPercentage);
+    setSelectedTicker(null);
+    setPercentage("");
+
+    toast({
+      title: "Asset added",
+      description: `${selectedTicker} (${parsedPercentage}%) added successfully.`,
+    });
   };
 
   return (
-    <div className="w-full max-w-lg mx-auto p-6 bg-white/10 backdrop-blur-lg rounded-xl shadow-xl">
-      <h2 className="text-lg font-semibold text-gray-200 mb-4">📌 Add Asset</h2>
-      <form
-        className="flex flex-col space-y-4"
-        onSubmit={handleSubmit(onSubmit)}
-      >
-        <Input
-          className="border border-gray-500 bg-black/30 text-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"
-          placeholder="Ticker (e.g., BTC, ETH)"
-          {...register("ticker")}
+    <Card className="w-full">
+      <CardHeader>
+        <CardTitle className="text-lg font-semibold text-primary">
+          Add Asset
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Label htmlFor="asset" className="text-sm">
+          Asset
+        </Label>
+        <Combobox
+          options={SUPPORTED_ASSETS.map((asset) => ({
+            value: asset,
+            label: asset,
+          }))}
+          value={selectedTicker}
+          onChange={setSelectedTicker}
+          placeholder="Select an asset"
         />
-        {errors.ticker && (
-          <p className="text-red-500 text-sm">{errors.ticker.message}</p>
-        )}
 
+        <Label htmlFor="percentage" className="text-sm">
+          Percentage
+        </Label>
         <Input
-          className="border border-gray-500 bg-black/30 text-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:outline-none"
-          placeholder="Percentage (%)"
+          id="percentage"
           type="number"
-          {...register("percentage", { valueAsNumber: true })}
+          value={percentage}
+          onChange={(e) =>
+            setPercentage(e.target.value.replace(/[^0-9.]/g, ""))
+          }
+          placeholder="Enter value"
+          min={1}
+          max={100}
+          className="mb-4"
         />
-        {errors.percentage && (
-          <p className="text-red-500 text-sm">{errors.percentage.message}</p>
-        )}
 
         <Button
-          className="border border-gray-500 bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg hover:scale-105 transition-all"
-          type="submit"
+          onClick={handleAdd}
+          disabled={!selectedTicker || !percentage}
+          className="w-full"
         >
-          ➕ Add
+          Add to Portfolio
         </Button>
-      </form>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

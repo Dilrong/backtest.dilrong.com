@@ -1,11 +1,10 @@
-from typing import Any
 import ccxt
 import pandas as pd
 from datetime import datetime
 from fastapi import HTTPException
+from app.core.config import settings
 
 exchange = ccxt.binance()
-
 
 def fetch_data(symbols, timeframe, start_date, end_date) -> dict:
     data = {}
@@ -43,6 +42,20 @@ def fetch_data(symbols, timeframe, start_date, end_date) -> dict:
 def calculate_portfolio_backtest(
     symbols, weights, initial_balance, start_date, end_date, rebalance_period="ME"
 ) -> dict:
+    # 데이터 검증
+    start = datetime.strptime(start_date, "%Y-%m-%d")
+    end = datetime.strptime(end_date, "%Y-%m-%d")
+    if start >= end:
+        raise ValueError("Start date must be before end date")
+
+    unsupported_assets = [symbol for symbol in symbols if symbol not in settings.SUPPORTED_ASSETS]
+    if unsupported_assets:
+        raise ValueError(f"Unsupported assets: {', '.join(unsupported_assets)}")
+
+    if rebalance_period not in settings.VALID_REBALANCE_PERIODS:
+        raise ValueError(f"Invalid rebalance period: {rebalance_period}. Must be one of {settings.VALID_REBALANCE_PERIODS}")
+
+    # 백테스트 진행
     data = fetch_data(symbols, "1M", start_date, end_date)
 
     portfolio_df = pd.DataFrame(
