@@ -1,7 +1,6 @@
 from app.schemas.backtest_request import BacktestRequest
 from app.services.backtest_service import (
     calculate_portfolio_backtest,
-    calculate_strategy_backtest,
 )
 from app.schemas.api_response import APIResponse
 from fastapi import APIRouter
@@ -18,15 +17,10 @@ async def run_portfolio_backtest(request: BacktestRequest):
         start_date=request.start_date,
         end_date=request.end_date,
         rebalance_period=request.rebalance_period,
+        rebalance=request.rebalance,
+        fee_rate=request.fee_rate,
+        slippage=request.slippage,
     )
     return APIResponse(
-        success=True, message="Calculate Portfolio Backtest Result", data=data
-    )
-
-
-@router.post("/strategy")
-async def run_strategy_backtest():
-    data = calculate_strategy_backtest()
-    return APIResponse(
-        success=True, message="Calculate Strategy Backtest Result", data=data
+        success=True, message="Calculated Portfolio Backtest Result", data=data
     )

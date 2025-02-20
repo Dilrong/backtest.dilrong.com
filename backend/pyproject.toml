@@ -13,7 +13,8 @@ dependencies = [
     "pydantic-core (>=2.29.0,<3.0.0)",
     "pydantic-settings (>=2.7.1,<3.0.0)",
     "ccxt (>=4.4.60,<5.0.0)",
-    "pandas (>=2.2.3,<3.0.0)"
+    "pandas (>=2.2.3,<3.0.0)",
+    "httpx (>=0.28.1,<0.29.0)"
 ]
 
 
@@ -25,4 +26,6 @@ build-backend = "poetry.core.masonry.api"
 uvicorn = "^0.34.0"
 black = "^25.1.0"
 flake8 = "^7.1.2"
+pytest-mock = "^3.14.0"
+pytest = "^8.3.4"
 

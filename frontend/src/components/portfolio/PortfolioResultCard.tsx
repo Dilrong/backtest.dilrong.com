@@ -23,7 +23,7 @@ export function PortfolioResultCard({ result }: PortfolioResultCardProps) {
       <CardContent className="grid grid-cols-2 gap-4 p-6 items-center">
         <span className="text-sm text-muted-foreground">Final Balance:</span>
         <span className="text-green-500">
-          ${result.result.final_balance.toFixed(2)}
+          ${result.result.final_balance.toLocaleString()}
         </span>
 
         <span className="text-sm text-muted-foreground">ROI:</span>

@@ -4,13 +4,12 @@ from pydantic_settings import BaseSettings
 
 class Settings(BaseSettings):
     app_name: str = "BacktestAPI"
-    
+
     # 로그
     LOG_LEVEL: str = "INFO"
     LOG_DIR: str = "./logs"
 
-    # 지원 옵션
-    VALID_REBALANCE_PERIODS: ClassVar[Set[str]] = {"1D", "1W", "1M", "1Y"}
+    # 지원 자산
     SUPPORTED_ASSETS: ClassVar[Set[str]] = {
         "BTC/USDT",
         "ETH/USDT",
@@ -563,7 +562,7 @@ class Settings(BaseSettings):
         "1000CHEEMS/USDT",
         "TST/USDT",
         "LAYER/USDT",
-        "HEI/USDT"
+        "HEI/USDT",
     }
 
 

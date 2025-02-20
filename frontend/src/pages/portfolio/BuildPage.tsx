@@ -26,6 +26,10 @@ interface Portfolio {
   initialBalance: number;
   startDate: string;
   endDate: string;
+  rebalancePeriod: string;
+  rebalance: boolean;
+  feeRate: number;
+  slippage: number;
 }
 
 export default function PortfolioPage() {
@@ -37,6 +41,10 @@ export default function PortfolioPage() {
   const [initialBalance, setInitialBalance] = useState(10000);
   const [startDate, setStartDate] = useState("2024-01-01");
   const [endDate, setEndDate] = useState("2025-01-31");
+  const [rebalancePeriod, setRebalancePeriod] = useState("D");
+  const [rebalance, setRebalance] = useState(true);
+  const [feeRate, setFeeRate] = useState(0.001);
+  const [slippage, setSlippage] = useState(0.0005);
 
   const { runBacktest, isLoading } = useBacktestAPI();
   const navigate = useNavigate();
@@ -55,6 +63,10 @@ export default function PortfolioPage() {
           initialBalance: 10000,
           startDate: "2024-01-01",
           endDate: "2025-01-31",
+          rebalancePeriod: "D",
+          rebalance: true,
+          feeRate: 0.001,
+          slippage: 0.0005,
         },
       ]);
     }
@@ -99,14 +111,15 @@ export default function PortfolioPage() {
       initialBalance,
       startDate,
       endDate,
+      rebalancePeriod,
+      rebalance,
+      feeRate,
+      slippage,
     };
 
     setPortfolios((prev) => [...prev, newPortfolio]);
     setPortfolioName("");
     setCurrentPortfolio([]);
-    setInitialBalance(10000);
-    setStartDate("2024-01-01");
-    setEndDate("2025-01-31");
   };
 
   const handleDeletePortfolio = (id: number) => {
@@ -129,7 +142,11 @@ export default function PortfolioPage() {
           assets,
           portfolio.initialBalance,
           portfolio.startDate,
-          portfolio.endDate
+          portfolio.endDate,
+          portfolio.rebalancePeriod,
+          portfolio.rebalance,
+          portfolio.feeRate,
+          portfolio.slippage
         );
         if (result) {
           portfolioTestResults.push({ name: portfolio.name, result });
@@ -167,6 +184,14 @@ export default function PortfolioPage() {
           setStartDate={setStartDate}
           endDate={endDate}
           setEndDate={setEndDate}
+          rebalancePeriod={rebalancePeriod}
+          setRebalancePeriod={setRebalancePeriod}
+          rebalance={rebalance}
+          setRebalance={setRebalance}
+          feeRate={feeRate}
+          setFeeRate={setFeeRate}
+          slippage={slippage}
+          setSlippage={setSlippage}
         />
       </div>
 

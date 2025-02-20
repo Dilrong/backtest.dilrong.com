@@ -7,6 +7,9 @@ interface BacktestRequest {
   start_date: string;
   end_date: string;
   rebalance_period: string;
+  rebalance: boolean;
+  fee_rate: number;
+  slippage: number;
 }
 
 interface BacktestResult {
@@ -28,7 +31,11 @@ export default function useBacktestAPI() {
     assets: Record<string, number>,
     initialBalance: number,
     startDate: string,
-    endDate: string
+    endDate: string,
+    rebalancePeriod: string,
+    rebalance: boolean,
+    feeRate: number,
+    slippage: number
   ) => {
     setIsLoading(true);
     setError(null);
@@ -39,7 +46,10 @@ export default function useBacktestAPI() {
       initial_balance: initialBalance,
       start_date: startDate,
       end_date: endDate,
-      rebalance_period: "1D",
+      rebalance_period: rebalancePeriod,
+      rebalance: rebalance,
+      fee_rate: feeRate,
+      slippage: slippage,
     };
 
     try {
