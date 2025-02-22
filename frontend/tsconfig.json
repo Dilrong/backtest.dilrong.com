@@ -4,6 +4,7 @@
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }
   ],
+  "exclude": ["src/components/ui/command.tsx"],
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
