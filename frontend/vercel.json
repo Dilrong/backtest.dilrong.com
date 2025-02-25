@@ -1,8 +1,0 @@
-{
-  "rewrites": [
-    {
-      "source": "/backtest/(.*)",
-      "destination": "http://58.120.217.147:8000/backtest/$1"
-    }
-  ]
-}

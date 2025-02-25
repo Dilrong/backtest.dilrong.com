@@ -1,1 +1,1 @@
-export const baseUrl = "http://58.120.217.147:8000";
+export const baseUrl = "https://soduck.xyz";
