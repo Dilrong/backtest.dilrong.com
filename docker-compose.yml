@@ -9,3 +9,4 @@ services:
       - ./backend:/app
     environment:
       - PYTHONUNBUFFERED=1
+    network_mode: host
