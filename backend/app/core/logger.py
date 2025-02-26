@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+from fluent import handler as fluent_handler
 from logging.handlers import TimedRotatingFileHandler
 from app.core.config import settings
 
@@ -15,6 +16,13 @@ LOG_FORMAT = "%(asctime)s - %(levelname)s - %(message)s"
 # 콘솔 핸들러
 console_handler = logging.StreamHandler(sys.stdout)
 console_handler.setFormatter(logging.Formatter(LOG_FORMAT))
+
+# Fluent 핸들러
+fluent_handler = fluent_handler.FluentHandler(
+        tag="discord_bot.backend",
+        host="localhost",
+        port=24224,
+    )
 
 # INFO 핸들러
 info_handler = TimedRotatingFileHandler(
@@ -46,6 +54,7 @@ logger.setLevel(getattr(logging, settings.LOG_LEVEL, logging.INFO))
 
 # 핸들러 추가
 logger.addHandler(console_handler)
+logger.addHandler(fluent_handler)
 logger.addHandler(info_handler)
 logger.addHandler(error_handler)
 

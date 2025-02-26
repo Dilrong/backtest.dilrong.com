@@ -16,6 +16,8 @@ import AppLayout from "./AppLayout.tsx";
 import PortfolioBuildPage from "./pages/portfolio/BuildPage.tsx";
 import PortfolioTestResultPage from "./pages/portfolio/TestResultPage.tsx";
 import HomePage from "./pages/HomePage.tsx";
+import StrategyPage from "./pages/strategy/BuildPage.tsx";
+import StrategyTestResultPage from "./pages/strategy/TestResultPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -25,6 +27,8 @@ const router = createBrowserRouter(
       <Route index element={<HomePage />} />
       <Route path="/portfolio" element={<PortfolioBuildPage />} />
       <Route path="/portfolio/results" element={<PortfolioTestResultPage />} />
+      <Route path="/strategy" element={<StrategyPage />} />
+      <Route path="/strategy/results" element={<StrategyTestResultPage />} />
     </Route>
   )
 );

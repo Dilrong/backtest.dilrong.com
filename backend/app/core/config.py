@@ -9,6 +9,10 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_DIR: str = "./logs"
 
+    # 브릿지 자산 패턴
+    BRIDGED_PATTERNS: list[str] = ["wrapped", "bridged", "weth", "wbnb", "w-", "peg", "staked", 
+    "tbtc", "solv", "lombard", "restaked", "abtc", "reth", "teth"]
+
     # 지원 자산
     SUPPORTED_ASSETS: ClassVar[Set[str]] = {
         "BTC/USDT",
