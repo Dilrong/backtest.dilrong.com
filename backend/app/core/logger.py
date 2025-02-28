@@ -19,10 +19,10 @@ console_handler.setFormatter(logging.Formatter(LOG_FORMAT))
 
 # Fluent 핸들러
 fluent_handler = fluent_handler.FluentHandler(
-        tag="discord_bot.backend",
-        host="localhost",
-        port=24224,
-    )
+    tag="discord_bot.backend",
+    host="localhost",
+    port=24224,
+)
 
 # INFO 핸들러
 info_handler = TimedRotatingFileHandler(

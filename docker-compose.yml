@@ -6,8 +6,28 @@ services:
     image: backtest-backend
     ports:
       - "8000:8000"
-    volumes:
-      - ./backend:/app
     environment:
       - PYTHONUNBUFFERED=1
-    network_mode: host
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_DB=0
+      - ETHERSCAN_API_KEY=${ETHERSCAN_API_KEY}
+    depends_on:
+      - redis
+    volumes:
+      - ./backend:/app
+    # network_mode: host
+  redis:
+    image: redis:6.2-alpine
+    volumes:
+      - redis-data:/data
+    command: redis-server --requirepass 1q2w3e4r! --disable-command CONFIG
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  redis-data:

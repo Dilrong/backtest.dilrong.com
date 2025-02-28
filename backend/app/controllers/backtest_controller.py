@@ -21,6 +21,7 @@ async def run_portfolio_backtest(request: BacktestRequest):
         fee_rate=request.fee_rate,
         slippage=request.slippage,
     )
+
     return APIResponse(
         success=True, message="Calculated Portfolio Backtest Result", data=data
     )

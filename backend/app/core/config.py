@@ -1,3 +1,4 @@
+import os
 from typing import ClassVar, Set
 from pydantic_settings import BaseSettings
 
@@ -9,9 +10,31 @@ class Settings(BaseSettings):
     LOG_LEVEL: str = "INFO"
     LOG_DIR: str = "./logs"
 
+    # 레디스
+    REDIS_HOST: str = os.getenv("REDIS_HOST", "localhost")
+    REDIS_PORT: int = int(os.getenv("REDIS_PORT", 6379))
+    REDIS_DB: int = int(os.getenv("REDIS_DB", 0))
+    REDIS_PASSWORD: str = os.getenv("REDIS_PASSWORD", "1q2w3e4r!")
+    CACHE_TTL: int = 3600  # 캐시 유효 시간 1시간 (초 단위)
+    ETHERSCAN_API_KEY: str = os.getenv("ETHERSCAN_API_KEY", "")
+
     # 브릿지 자산 패턴
-    BRIDGED_PATTERNS: list[str] = ["wrapped", "bridged", "weth", "wbnb", "w-", "peg", "staked", 
-    "tbtc", "solv", "lombard", "restaked", "abtc", "reth", "teth"]
+    BRIDGED_PATTERNS: list[str] = [
+        "wrapped",
+        "bridged",
+        "weth",
+        "wbnb",
+        "w-",
+        "peg",
+        "staked",
+        "tbtc",
+        "solv",
+        "lombard",
+        "restaked",
+        "abtc",
+        "reth",
+        "teth",
+    ]
 
     # 지원 자산
     SUPPORTED_ASSETS: ClassVar[Set[str]] = {

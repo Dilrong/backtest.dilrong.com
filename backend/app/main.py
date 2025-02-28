@@ -6,6 +6,7 @@ from app.core.exception.api_exception import (
     validation_error_handler,
 )
 from app.controllers import backtest_controller
+from app.controllers import valuation_controller
 from app.controllers import check_controller
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import FastAPI
@@ -14,6 +15,7 @@ app = FastAPI()
 
 # Controller
 app.include_router(check_controller.router)
+app.include_router(valuation_controller.router)
 app.include_router(backtest_controller.router)
 
 # Middleware

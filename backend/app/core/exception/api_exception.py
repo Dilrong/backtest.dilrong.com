@@ -2,6 +2,7 @@ from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
+
 from app.core.logger import get_logger
 
 logger = get_logger()
