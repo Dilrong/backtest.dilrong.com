@@ -1,4 +1,4 @@
-from app.schemas.backtest_request import BacktestRequest
+from app.schemas.portfolio_request import BacktestRequest
 from app.services.backtest_service import (
     calculate_portfolio_backtest,
 )

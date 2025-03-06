@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { PieChart, Menu, LineChart, LucideIcon } from "lucide-react";
+import { Analytics } from "@vercel/analytics/react";
+import { PieChart, Menu, ChartScatter, LucideIcon } from "lucide-react";
 import { Drawer, DrawerContent, DrawerTrigger } from "@/components/ui/drawer";
 
 interface NavItem {
@@ -11,7 +12,8 @@ interface NavItem {
 export default function Header() {
   const navItems = [
     { href: "/portfolio", label: "Portfolio", icon: PieChart },
-    { href: "/strategy", label: "Strategy", icon: LineChart },
+    { href: "/probability", label: "Probability", icon: ChartScatter },
+    // { href: "/strategy", label: "Strategy", icon: LineChart },
   ];
 
   const renderNavItem = (item: NavItem) => (
@@ -74,6 +76,7 @@ export default function Header() {
           </DrawerContent>
         </Drawer>
       </div>
+      <Analytics />
     </Card>
   );
 }
