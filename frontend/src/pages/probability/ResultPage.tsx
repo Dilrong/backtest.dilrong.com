@@ -1,7 +1,7 @@
-import { useEffect, useState, useMemo } from "react";
+import { ProbabilityGrowthChart } from "@/components/probability/ProbabilityGrowthChart";
+import { ResultCardList } from "@/components/probability/ResultCardList";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ProbabilityResultCard } from "../../components/probability/ProbabilityResultCard";
-import { ProbabilityGrowthChart } from "../../components/probability/ProbabilityGrowthChart";
 
 interface ProbabilityResult {
   symbol: string;
@@ -55,52 +55,28 @@ export default function ProbabilityResultPage() {
     });
 
     const sortedDates = Array.from(allDates).sort();
-    const data = sortedDates.map((date) => {
+    const data = sortedDates.map((date, index) => {
       const entry: Record<string, any> = { date };
       results.forEach(({ symbol, result }) => {
         const value = result.value_history[date] || null;
-        const stdDev = result.standard_deviation; // 연율화된 값 그대로 사용
+        const dailyVolatility = result.daily_returns[index] || 0;
         entry[symbol] = value;
-        entry[`${symbol}_stdDevUpper`] = value ? value * (1 + stdDev) : null;
-        entry[`${symbol}_stdDevLower`] = value ? value * (1 - stdDev) : null;
+        entry[`${symbol}_volatility`] = Math.abs(dailyVolatility);
       });
       return entry;
     });
 
-    console.log("Chart Data with StdDev:", data);
+    console.log("Chart Data with Daily Volatility:", data);
     return data;
   }, [results]);
 
   console.log("Rendering ProbabilityResultPage with results:", results);
 
   return (
-    <div>
-      <h2>Probability Results</h2>
-      <p>
-        View the probability of achieving your target return based on historical
-        data.
-      </p>
-
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fill, minmax(250px, 1fr))",
-          gap: "20px",
-          marginTop: "20px",
-        }}
-      >
-        {results.map((result) => (
-          <ProbabilityResultCard key={result.symbol} result={result} />
-        ))}
-      </div>
-
-      <div style={{ marginTop: "20px" }}>
-        {chartData.length > 0 ? (
-          <ProbabilityGrowthChart results={results} chartData={chartData} />
-        ) : (
-          <p>No chart data available.</p>
-        )}
-      </div>
+    <div className="w-full max-w-6xl mx-auto p-6 space-y-6">
+      <h2 className="text-xl font-semibold">Probability Results</h2>
+      <ResultCardList results={results} />
+      <ProbabilityGrowthChart results={results} chartData={chartData} />
     </div>
   );
 }

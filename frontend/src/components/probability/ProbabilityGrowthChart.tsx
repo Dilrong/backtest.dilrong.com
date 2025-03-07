@@ -1,23 +1,34 @@
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend } from "recharts";
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
-  ChartTooltipContent,
 } from "@/components/ui/chart";
-import { useMemo } from "react";
 
 interface ProbabilityGrowthChartProps {
   results: {
     symbol: string;
-    result: { expected_return: number; target_return: number };
+    result: {
+      expected_return: number;
+      target_return: number;
+      standard_deviation: number;
+    };
   }[];
-  chartData: unknown[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  chartData: { [key: string]: any; date: string }[];
 }
 
-const getSymbolColor = (index: number) => {
-  const colors = [
+const chartConfig = {
+  value: { label: "Value ($)" },
+} satisfies ChartConfig;
+
+const getSymbolColor = (
+  index: number,
+  volatility: number,
+  maxVolatility: number
+) => {
+  const baseColors = [
     "#009EFF",
     "#FF5733",
     "#6A00FF",
@@ -28,51 +39,31 @@ const getSymbolColor = (index: number) => {
     "#3F51B5",
     "#FF9800",
   ];
-  return colors[index % colors.length];
+  const baseColor = baseColors[index % baseColors.length];
+  const normalizedVolatility =
+    maxVolatility > 0 ? Math.min(volatility / maxVolatility, 1) : 0;
+  const opacity = 0.7 + normalizedVolatility * 0.5;
+  return `${baseColor}${Math.round(Math.min(opacity, 1) * 255)
+    .toString(16)
+    .padStart(2, "0")}`;
 };
 
 export function ProbabilityGrowthChart({
   results,
   chartData,
 }: ProbabilityGrowthChartProps) {
-  console.log("Rendering ProbabilityGrowthChart - Results:", results);
-  console.log("Rendering ProbabilityGrowthChart - Chart Data:", chartData);
-
-  const chartConfig = useMemo(() => {
-    return results.reduce((config, { symbol }) => {
-      config[symbol] = {
-        label: `${symbol} Value`,
-        color: getSymbolColor(
-          results.indexOf({
-            symbol,
-            result: { expected_return: 0, target_return: 0 },
-          })
-        ),
-      };
-      return config;
-    }, {} as Record<string, { label: string; color: string }>) satisfies ChartConfig;
-  }, [results]);
-
-  const lines = useMemo(() => {
-    return results.map(({ symbol }, index) => (
-      <Line
-        key={`${symbol}`}
-        name={`${symbol}`}
-        dataKey={symbol}
-        stroke={getSymbolColor(index)}
-        strokeWidth={2}
-        dot={false}
-        connectNulls
-      />
-    ));
-  }, [results]);
+  const maxVolatility =
+    chartData.length > 0
+      ? Math.max(
+          ...chartData.flatMap((d) =>
+            results.map((r) => d[`${r.symbol}_volatility`] || 0)
+          )
+        )
+      : 0;
 
   if (!Array.isArray(chartData) || chartData.length === 0) {
     return (
       <Card>
-        <CardHeader>
-          <CardTitle>Value Growth Over Time</CardTitle>
-        </CardHeader>
         <CardContent>
           <p>No valid chart data available.</p>
         </CardContent>
@@ -82,26 +73,67 @@ export function ProbabilityGrowthChart({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Value Growth Over Time</CardTitle>
-      </CardHeader>
-      <CardContent className="w-full overflow-x-auto">
+      <CardHeader></CardHeader>
+      <CardContent>
         <ChartContainer config={chartConfig} className="w-full">
-          <LineChart
+          <BarChart
             width={Math.min(window.innerWidth * 0.9, 800)}
             height={300}
             data={chartData}
+            barGap={4}
+            barCategoryGap={8}
           >
             <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="date" stroke="#bbb" />
-            <YAxis
-              stroke="#bbb"
-              tickFormatter={(value) => `$${value.toFixed(2)}`}
+            <XAxis dataKey="date" />
+            <YAxis tickFormatter={(value) => `$${value.toFixed(2)}`} />
+            <ChartTooltip
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  return (
+                    <div className="rounded-lg border p-2 bg-background">
+                      <div className="grid gap-2">
+                        <div className="font-bold">
+                          {payload[0].payload.date}
+                        </div>
+                        {payload.map((item, idx) => {
+                          const symbol = item.dataKey as string;
+                          const volatility =
+                            item.payload[`${symbol}_volatility`];
+                          return (
+                            <div key={idx} className="flex items-center gap-2">
+                              <div
+                                className="h-2.5 w-2.5 rounded-full"
+                                style={{ backgroundColor: item.color }}
+                              />
+                              <span>
+                                {symbol}: ${Number(item.value).toFixed(2)}
+                              </span>
+                              {volatility !== undefined && (
+                                <span>
+                                  (Volatility: {(volatility * 100).toFixed(2)}%)
+                                </span>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
             />
-            <ChartTooltip content={<ChartTooltipContent />} />
             <Legend />
-            {lines}
-          </LineChart>
+            {results.map(({ symbol }, index) => (
+              <Bar
+                key={`${symbol}`}
+                name={`${symbol} Value`}
+                dataKey={symbol}
+                barSize={20}
+                fill={getSymbolColor(index, 0, maxVolatility)}
+              />
+            ))}
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
