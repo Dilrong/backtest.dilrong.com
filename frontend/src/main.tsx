@@ -20,6 +20,8 @@ import ProbabilityBuildPage from "./pages/probability/BuildPage.tsx";
 import ProbabilityResultPage from "./pages/probability/ResultPage.tsx";
 import StrategyPage from "./pages/strategy/BuildPage.tsx";
 import StrategyTestResultPage from "./pages/strategy/TestResultPage.tsx";
+import MonteCarloBuildPage from "./pages/monte-carlo/MonteCarloBuildPage.tsx";
+import MonteCarloResultPage from "./pages/monte-carlo/MonteCarloResultPage.tsx";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +33,8 @@ const router = createBrowserRouter(
       <Route path="/portfolio/results" element={<PortfolioTestResultPage />} />
       <Route path="/probability" element={<ProbabilityBuildPage />} />
       <Route path="/probability/results" element={<ProbabilityResultPage />} />
+      <Route path="/montecarlo" element={<MonteCarloBuildPage />} />
+      <Route path="/monte-carlo/results" element={<MonteCarloResultPage />} />
       <Route path="/strategy" element={<StrategyPage />} />
       <Route path="/strategy/results" element={<StrategyTestResultPage />} />
     </Route>
